@@ -1,0 +1,13 @@
+[package]
+name = "mvvm"
+version = "0.1.0"
+edition = "2024"
+description = "A fast, modular, platform-agnostic MVVM library, which is a Rust imitation of Microsoft's CommunityToolkit.Mvvm."
+repository = "https://github.com/fxdmhtt/Mvvm"
+license = "GPL-2.0"
+keywords = ["mvvm"]
+categories = []
+
+[dependencies]
+async-event-rs = "0.2.2"
+event-rs = "0.1.0"
