@@ -30,7 +30,7 @@ use event_rs::Event;
 #[derive(Default)]
 pub struct ObservableProperty<'a, T>
 where
-    T: Eq,
+    T: Eq + Default,
 {
     /// The internal value of the property.
     value: T,
@@ -44,8 +44,33 @@ where
 
 impl<'a, T> ObservableProperty<'a, T>
 where
-    T: Eq,
+    T: Eq + Default,
 {
+    /// Creates a new `ObservableProperty` with the specified initial value.
+    ///
+    /// The `PropertyChanging` and `PropertyChanged` events are initialized but do not
+    /// have any subscribers initially.
+    ///
+    /// # Parameters
+    /// - `value`: The initial value of the property.
+    ///
+    /// # Examples
+    /// ```
+    /// use mvvm::System::ComponentModel::ObservableProperty;
+    ///
+    /// let mut prop = ObservableProperty::new(10);
+    /// assert_eq!(prop.get(), 10);
+    ///
+    /// prop.set(20);
+    /// assert_eq!(prop.get(), 20);
+    /// ```
+    pub fn new(value: T) -> Self {
+        Self {
+            value,
+            ..Default::default()
+        }
+    }
+
     /// Invokes the `PropertyChanged` event.
     fn OnPropertyChanged(&self) {
         self.PropertyChanged.invoke(self)
