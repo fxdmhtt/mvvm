@@ -19,10 +19,10 @@ use event_rs::Event;
 /// use mvvm::System::ComponentModel::ObservableProperty;
 ///
 /// let log = Rc::new(RefCell::new(Vec::new()));
-/// let mut prop = ObservableProperty::<i32>::default();
+/// let prop = ObservableProperty::<i32>::default();
 ///
-/// prop.PropertyChanging.add(|p| (*log.borrow_mut()).push(format!("Changing from {}", p.get())));
-/// prop.PropertyChanged.add(|p| (*log.borrow_mut()).push(format!("Changed to {}", p.get())));
+/// prop.PropertyChanging.borrow_mut().add(|p| (*log.borrow_mut()).push(format!("Changing from {}", p.get())));
+/// prop.PropertyChanged.borrow_mut().add(|p| (*log.borrow_mut()).push(format!("Changed to {}", p.get())));
 ///
 /// prop.set(42);
 ///
@@ -38,10 +38,10 @@ where
     value: RefCell<T>,
 
     /// Event Invoked after the value has changed.
-    pub PropertyChanged: Event<'a, ObservableProperty<'a, T>>,
+    pub PropertyChanged: RefCell<Event<'a, ObservableProperty<'a, T>>>,
 
     /// Event Invoked before the value changes.
-    pub PropertyChanging: Event<'a, ObservableProperty<'a, T>>,
+    pub PropertyChanging: RefCell<Event<'a, ObservableProperty<'a, T>>>,
 }
 
 impl<'a, T> ObservableProperty<'a, T>
@@ -75,12 +75,12 @@ where
 
     /// Invokes the `PropertyChanged` event.
     fn OnPropertyChanged(&self) {
-        self.PropertyChanged.invoke(self)
+        self.PropertyChanged.borrow().invoke(self)
     }
 
     /// Invokes the `PropertyChanging` event.
     fn OnPropertyChanging(&self) {
-        self.PropertyChanging.invoke(self)
+        self.PropertyChanging.borrow().invoke(self)
     }
 
     /// Compares the current and new values for a given property. If the value has changed,
@@ -154,14 +154,14 @@ mod tests {
     #[test]
     fn test_observable_property() {
         let counter = Rc::new(RefCell::new(0));
-        let mut prop = ObservableProperty::<i32>::default();
+        let prop = ObservableProperty::<i32>::default();
 
-        prop.PropertyChanging.add(|p| {
+        prop.PropertyChanging.borrow_mut().add(|p| {
             assert_eq!(p.get(), 0);
             *counter.borrow_mut() += 1 << p.get();
         });
 
-        prop.PropertyChanged.add(|p| {
+        prop.PropertyChanged.borrow_mut().add(|p| {
             assert_eq!(p.get(), 2);
             *counter.borrow_mut() += 1 << p.get();
         });
