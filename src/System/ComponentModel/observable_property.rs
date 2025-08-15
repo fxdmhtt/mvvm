@@ -1,5 +1,7 @@
 #![allow(non_snake_case)]
 
+use std::cell::{Ref, RefCell};
+
 use event_rs::Event;
 
 /// Represents a property that can be observed for changes.
@@ -33,7 +35,7 @@ where
     T: Eq + Default,
 {
     /// The internal value of the property.
-    value: T,
+    value: RefCell<T>,
 
     /// Event Invoked after the value has changed.
     pub PropertyChanged: Event<'a, ObservableProperty<'a, T>>,
@@ -66,7 +68,7 @@ where
     /// ```
     pub fn new(value: T) -> Self {
         Self {
-            value,
+            value: value.into(),
             ..Default::default()
         }
     }
@@ -89,14 +91,14 @@ where
     ///
     /// The `PropertyChanging` and `PropertyChanged` events are not raised
     /// if the current and new value for the target property are the same.
-    fn SetProperty(&mut self, value: T) -> bool {
-        if self.value == value {
+    fn SetProperty(&self, value: T) -> bool {
+        if *self.value.borrow() == value {
             return false;
         }
 
         self.OnPropertyChanging();
 
-        self.value = value;
+        *self.value.borrow_mut() = value;
 
         self.OnPropertyChanged();
 
@@ -104,8 +106,8 @@ where
     }
 
     /// Gets a reference to the current value of the property.
-    pub fn GetValue(&self) -> &T {
-        &self.value
+    pub fn GetValue(&self) -> Ref<'_, T> {
+        self.value.borrow()
     }
 
     /// Compares the current and new values for a given property. If the value has changed,
@@ -116,7 +118,7 @@ where
     ///
     /// The `PropertyChanging` and `PropertyChanged` events are not raised
     /// if the current and new value for the target property are the same.
-    pub fn SetValue(&mut self, value: T) -> bool {
+    pub fn SetValue(&self, value: T) -> bool {
         self.SetProperty(value)
     }
 
@@ -138,7 +140,7 @@ where
     ///
     /// The `PropertyChanging` and `PropertyChanged` events are not raised
     /// if the current and new value for the target property are the same.
-    pub fn set(&mut self, value: T) -> bool {
+    pub fn set(&self, value: T) -> bool {
         self.SetValue(value)
     }
 }

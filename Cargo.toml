@@ -1,6 +1,6 @@
 [package]
 name = "mvvm"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2024"
 description = "A fast, modular, platform-agnostic MVVM library, which is a Rust imitation of Microsoft's CommunityToolkit.Mvvm."
 repository = "https://github.com/fxdmhtt/Mvvm"
