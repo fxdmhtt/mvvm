@@ -2,6 +2,7 @@
 name = "mvvm"
 version = "0.3.0"
 edition = "2024"
+authors = ["Junkang Yuan <yuanjunkang@gmail.com>"]
 description = "A fast, modular, platform-agnostic MVVM library, which is a Rust imitation of Microsoft's CommunityToolkit.Mvvm."
 repository = "https://github.com/fxdmhtt/mvvm"
 license = "GPL-2.0"
